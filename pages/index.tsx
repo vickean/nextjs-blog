@@ -2,20 +2,28 @@ import Head from "next/head";
 import Layout, { siteTitle } from "../components/layout";
 import utilStyles from "../styles/utils.module.css";
 import { getSortedPostsData } from "../lib/posts";
+import Link from "next/link";
+import Date from "../components/date";
+import { GetStaticProps } from "next";
 
-export default function Home({ allPostsData }) {
+export default function Home({
+  allPostsData,
+}: {
+  allPostsData: {
+    date: string;
+    title: string;
+    id: string;
+  }[];
+}) {
   return (
     <Layout home>
       <Head>
         <title>{siteTitle}</title>
       </Head>
       <section className={utilStyles.headingMd}>
+        <p>My names' Vic. My friends call me "Fluff".</p>
         <p>
-          Hello. I'm Victor. My friends call me 'Fluff'. I like building stuff
-          using React!
-        </p>
-        <p>
-          (This is a sample website - you’ll be building a site like this on{" "}
+          (This is a sample website - you’ll be building a site like this in{" "}
           <a href="https://nextjs.org/learn">our Next.js tutorial</a>.)
         </p>
       </section>
@@ -24,11 +32,13 @@ export default function Home({ allPostsData }) {
         <ul className={utilStyles.list}>
           {allPostsData.map(({ id, date, title }) => (
             <li className={utilStyles.listItem} key={id}>
-              {title}
+              <Link href="/posts/[id]" as={`/posts/${id}`}>
+                <a>{title}</a>
+              </Link>
               <br />
-              {id}
-              <br />
-              {date}
+              <small className={utilStyles.lightText}>
+                <Date dateString={date} />
+              </small>
             </li>
           ))}
         </ul>
@@ -37,22 +47,11 @@ export default function Home({ allPostsData }) {
   );
 }
 
-export async function getStaticProps() {
+export const getStaticProps: GetStaticProps = async () => {
   const allPostsData = getSortedPostsData();
-  console.log(allPostsData);
   return {
     props: {
       allPostsData,
     },
   };
-}
-
-// export async function getServerSideProps() {
-//   const allPostsData = getSortedPostsData();
-//   console.log(allPostsData);
-//   return {
-//     props: {
-//       allPostsData,
-//     },
-//   };
-// }
+};
